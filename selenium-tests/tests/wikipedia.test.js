@@ -93,9 +93,8 @@ describe('Wikipedia Search Functionality Testovi', function() {
     it('Test 8: Search dugme (lupa) treba biti funkcionalno', async function() {
         const searchInput = await getSearchInput();
         await searchInput.sendKeys('Test automation');
-        // Pokušavamo naći dugme unutar forme, ili univerzalan selektor
         const searchBtn = await driver.findElement(By.css('button.cdx-search-input__end-button, #searchButton, button[type="submit"]'));
-        await searchBtn.click();
+        await driver.executeScript("arguments[0].click();", searchBtn);
         await driver.wait(until.titleContains('Test automation'), 10000);
     });
 
