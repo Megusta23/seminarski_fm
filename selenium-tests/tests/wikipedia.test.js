@@ -2,14 +2,14 @@ const { expect } = require('chai');
 const { By, until, Key } = require('selenium-webdriver');
 const { setupDriver, teardownDriver, waitForPageLoad, handleTestFailure } = require('./setup');
 
-describe('Wikipedia.org testovi', function() {
+describe('Wikipedia Search Functionality Testovi', function() {
     this.timeout(60000);
     let driver;
     const BASE_URL = 'https://en.wikipedia.org';
 
     before(async function() {
         this.timeout(90000);
-        driver = await setupDriver('Wikipedia.org');
+        driver = await setupDriver('Wikipedia Search');
     });
 
     after(async function() {
@@ -18,101 +18,126 @@ describe('Wikipedia.org testovi', function() {
 
     beforeEach(async function() {
         console.log(`Pokretanje testa: ${this.currentTest.title}`);
+        await driver.get(BASE_URL);
+        await waitForPageLoad();
     });
 
     afterEach(async function() {
         await handleTestFailure(this);
     });
 
-    describe('Wikipedia Homepage i Search testovi', function() {
-        
-        it('Test 1: Trebao bi uspješno učitati Wikipedia en homepage', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const title = await driver.getTitle();
-            expect(title).to.include('Wikipedia');
-        });
+    // Pomoćna funkcija za čekanje search inputa
+    async function getSearchInput() {
+        return await driver.wait(until.elementLocated(By.name('search')), 10000);
+    }
 
-        it('Test 2: Trebao bi prikazati logo Wikipedije', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const logo = await driver.wait(until.elementLocated(By.css('.mw-logo')), 10000);
-            expect(await logo.isDisplayed()).to.be.true;
-        });
-
-        it('Test 3: Trebao bi imati funkcionalno search polje', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const searchInput = await driver.wait(until.elementLocated(By.name('search')), 10000);
-            expect(await searchInput.isDisplayed()).to.be.true;
-        });
-
-        it('Test 4: Trebao bi pretražiti pojam "Selenium" i otvoriti članak', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const searchInput = await driver.findElement(By.name('search'));
-            await searchInput.sendKeys('Selenium (software)', Key.ENTER);
-            await driver.wait(until.titleContains('Selenium'), 10000);
-            const title = await driver.getTitle();
-            expect(title).to.include('Selenium');
-        });
-
-        it('Test 5: Trebao bi prikazati sekciju "Today\'s featured article"', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const featuredArticle = await driver.findElement(By.id('mp-tfa'));
-            expect(await featuredArticle.isDisplayed()).to.be.true;
-        });
-
-        it('Test 6: Trebao bi prikazati "Random article" link u sidebar-u', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const randomArticleLink = await driver.findElement(By.id('n-randompage'));
-            expect(await randomArticleLink.isDisplayed()).to.be.true;
-        });
-
-        it('Test 7: Trebao bi imati link za "Create account"', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const createAccountLink = await driver.findElement(By.id('pt-createaccount-2'));
-            expect(await createAccountLink.isDisplayed()).to.be.true;
-        });
-
-        it('Test 8: Trebao bi imati link za "Log in"', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const loginLink = await driver.findElement(By.id('pt-login-2'));
-            expect(await loginLink.isDisplayed()).to.be.true;
-        });
-
-        it('Test 9: Trebao bi prikazati listu dostupnih jezika na dnu ili u sidebar-u', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const langLinks = await driver.findElements(By.css('.interlanguage-link'));
-            expect(langLinks.length).to.be.greaterThan(0);
-        });
-
-        it('Test 10: Trebao bi imati link za "Contents" u navigaciji', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            const contentsLink = await driver.findElement(By.id('n-contents'));
-            expect(await contentsLink.isDisplayed()).to.be.true;
-        });
-
-        it('Test 11: Trebao bi imati link za "Contact us" u footeru', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            await driver.executeScript('window.scrollTo(0, document.body.scrollHeight);');
-            const contactLink = await driver.findElement(By.id('n-contactpage'));
-            expect(await contactLink.isDisplayed()).to.be.true;
-        });
-
-        it('Test 12: Trebao bi imati link za "About Wikipedia" u footeru', async function() {
-            await driver.get(BASE_URL);
-            await waitForPageLoad();
-            await driver.executeScript('window.scrollTo(0, document.body.scrollHeight);');
-            const aboutLink = await driver.wait(until.elementLocated(By.id('footer-places-about')), 10000);
-            expect(await aboutLink.isDisplayed()).to.be.true;
-        });
+    it('Test 1: Search input polje treba biti prisutno na početnoj stranici', async function() {
+        const searchInput = await getSearchInput();
+        expect(await searchInput.isDisplayed()).to.be.true;
     });
+
+    it('Test 2: Pretraga postojećeg pojma "Selenium (software)" treba voditi direktno na članak', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys('Selenium (software)', Key.ENTER);
+        await driver.wait(until.titleContains('Selenium'), 10000);
+        const title = await driver.getTitle();
+        expect(title).to.include('Selenium (software)');
+    });
+
+    it('Test 3: Autocomplete sugestije se trebaju pojaviti prilikom kucanja', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys('Java');
+        // Čekamo containter sugestija (često .cdx-menu ili slično, zavisno od skina, ali .suggestions ili .cdx-menu je standard)
+        // Vector 2022 koristi .cdx-menu
+        const suggestions = await driver.wait(until.elementLocated(By.css('.cdx-menu, .suggestions')), 10000);
+        expect(await suggestions.isDisplayed()).to.be.true;
+    });
+
+    it('Test 4: Klik na autocomplete sugestiju treba otvoriti taj članak', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys('Python');
+        const suggestion = await driver.wait(until.elementLocated(By.css('.cdx-menu li, .suggestions-result')), 10000);
+        await suggestion.click();
+        await driver.wait(until.titleContains('Python'), 10000);
+        const title = await driver.getTitle();
+        expect(title.toLowerCase()).to.include('python');
+    });
+
+    it('Test 5: Pretraga za nepostojeći pojam treba prikazati "There were no results matching the query"', async function() {
+        const searchInput = await getSearchInput();
+        const nonsense = 'a1b2c3d4e5f6g7h8nonsensestring';
+        await searchInput.sendKeys(nonsense, Key.ENTER);
+        await waitForPageLoad();
+        
+        // Na stranici rezultata
+        const pageSource = await driver.getPageSource();
+        expect(pageSource).to.include('There were no results matching the query');
+    });
+
+    it('Test 6: Pretraga treba biti "case-insensitive" (mala/velika slova)', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys('wikipedia', Key.ENTER); // mala slova
+        await driver.wait(until.titleContains('Wikipedia'), 10000);
+        const title = await driver.getTitle();
+        expect(title).to.include('Wikipedia'); // Očekujemo "Wikipedia" velika slova u naslovu
+    });
+
+    it('Test 7: Prazna pretraga treba voditi na Special:Search stranicu', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys(Key.ENTER);
+        await driver.wait(until.titleContains('Search'), 10000);
+        const title = await driver.getTitle();
+        expect(title).to.include('Search');
+    });
+
+    it('Test 8: Search dugme (lupa) treba biti funkcionalno', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys('Test automation');
+        // Pokušavamo naći dugme unutar forme, ili univerzalan selektor
+        const searchBtn = await driver.findElement(By.css('button.cdx-search-input__end-button, #searchButton, button[type="submit"]'));
+        await searchBtn.click();
+        await driver.wait(until.titleContains('Test automation'), 10000);
+    });
+
+    it('Test 9: Pretraga sa specijalnim karakterima (npr. C++) treba raditi', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys('C++', Key.ENTER);
+        await driver.wait(until.titleContains('C++'), 10000);
+        const title = await driver.getTitle();
+        expect(title).to.include('C++');
+    });
+
+    it('Test 10: Na stranici rezultata pretrage treba postojati forma za pretragu', async function() {
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys('generic term', Key.ENTER);
+        await waitForPageLoad();
+        
+        // Provjeravamo da li postoji input za pretragu na stranici sa rezultatima
+        const resultsInput = await driver.wait(until.elementLocated(By.css('input[name="search"]')), 10000);
+        expect(await resultsInput.isDisplayed()).to.be.true;
+    });
+
+    it('Test 11: Treba zadržati unijeti pojam u input polju na stranici rezultata', async function() {
+        const term = 'Consistency check';
+        const searchInput = await getSearchInput();
+        await searchInput.sendKeys(term, Key.ENTER);
+        await waitForPageLoad();
+        
+        const pageSource = await driver.getPageSource();
+        // Provjera da li se pojam nalazi u source-u kao value atribut
+        expect(pageSource.toLowerCase()).to.include(`value="${term.toLowerCase()}"`);
+    });
+
+    it('Test 12: Pretraga treba biti dostupna i sa internih stranica (ne samo home)', async function() {
+        // Odemo na neki standardni članak
+        await driver.get(BASE_URL + '/wiki/United_States');
+        await waitForPageLoad();
+        
+        const searchInput = await driver.wait(until.elementLocated(By.name('search')), 10000);
+        await searchInput.sendKeys('New York', Key.ENTER);
+        await driver.wait(until.titleContains('New York'), 10000);
+        const title = await driver.getTitle();
+        expect(title.toLowerCase()).to.include('new york');
+    });
+
 });
