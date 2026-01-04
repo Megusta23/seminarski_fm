@@ -71,14 +71,15 @@ describe('TimeAndDate.com testovi', function() {
         it('Test 7: Trebao bi prikazati Countdown link', async function() {
             await driver.get(BASE_URL);
             await waitForPageLoad();
-            const countdownLink = await driver.findElement(By.xpath("//a[contains(text(), 'Countdown')]"));
+            await driver.executeScript('window.scrollBy(0, 500);'); // Scroll malo dole da se učitaju sekcije
+            const countdownLink = await driver.wait(until.elementLocated(By.css('a[href*="/countdown/"]')), 10000);
             expect(await countdownLink.isDisplayed()).to.be.true;
         });
 
         it('Test 8: Trebao bi omogućiti navigaciju do World Clock stranice', async function() {
             await driver.get(BASE_URL);
             await waitForPageLoad();
-            const worldClockLink = await driver.findElement(By.xpath("//a[contains(text(), 'World Clock')]"));
+            const worldClockLink = await driver.wait(until.elementLocated(By.xpath("//a[contains(text(), 'World Clock')]")), 10000);
             await worldClockLink.click();
             await waitForPageLoad();
             const title = await driver.getTitle();
@@ -88,14 +89,15 @@ describe('TimeAndDate.com testovi', function() {
         it('Test 9: Trebao bi prikazati Sun & Moon link', async function() {
             await driver.get(BASE_URL);
             await waitForPageLoad();
-            const sunMoonLink = await driver.findElement(By.xpath("//a[contains(text(), 'Sun & Moon')]"));
+            await driver.executeScript('window.scrollTo(0, document.body.scrollHeight / 2);');
+            const sunMoonLink = await driver.wait(until.elementLocated(By.css('a[href*="/astronomy/"]')), 10000);
             expect(await sunMoonLink.isDisplayed()).to.be.true;
         });
 
         it('Test 10: Trebao bi prikazati Timer link', async function() {
             await driver.get(BASE_URL);
             await waitForPageLoad();
-            const timerLink = await driver.findElement(By.xpath("//a[contains(text(), 'Timer')]"));
+            const timerLink = await driver.wait(until.elementLocated(By.xpath("//a[contains(text(), 'Timer')]")), 10000);
             expect(await timerLink.isDisplayed()).to.be.true;
         });
 
@@ -103,14 +105,14 @@ describe('TimeAndDate.com testovi', function() {
             await driver.get(BASE_URL);
             await waitForPageLoad();
             await driver.executeScript('window.scrollTo(0, document.body.scrollHeight);');
-            const aboutLink = await driver.wait(until.elementLocated(By.xpath("//a[contains(text(), 'About')]")), 5000);
+            const aboutLink = await driver.wait(until.elementLocated(By.css('a[href*="/company/"]')), 10000);
             expect(await aboutLink.isDisplayed()).to.be.true;
         });
 
         it('Test 12: Trebao bi imati link do Calculator sekcije', async function() {
             await driver.get(BASE_URL);
             await waitForPageLoad();
-            const calcLink = await driver.findElement(By.xpath("//a[contains(text(), 'Calculators')]"));
+            const calcLink = await driver.wait(until.elementLocated(By.xpath("//a[contains(text(), 'Calculators')]")), 10000);
             expect(await calcLink.isDisplayed()).to.be.true;
         });
     });

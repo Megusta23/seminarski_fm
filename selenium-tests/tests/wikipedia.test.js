@@ -107,11 +107,12 @@ describe('Wikipedia.org testovi', function() {
             expect(await contactLink.isDisplayed()).to.be.true;
         });
 
-        it('Test 12: Trebao bi moći promijeniti temu ili vidjeti postavke izgleda (ako su dostupne kao link)', async function() {
+        it('Test 12: Trebao bi imati link za "About Wikipedia" u footeru', async function() {
             await driver.get(BASE_URL);
             await waitForPageLoad();
-            const helpLink = await driver.findElement(By.id('n-help'));
-            expect(await helpLink.isDisplayed()).to.be.true;
+            await driver.executeScript('window.scrollTo(0, document.body.scrollHeight);');
+            const aboutLink = await driver.wait(until.elementLocated(By.id('footer-places-about')), 10000);
+            expect(await aboutLink.isDisplayed()).to.be.true;
         });
     });
 });
