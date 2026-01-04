@@ -1,0 +1,22 @@
+{
+  "name": "formalne-metode-seminarski",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/**/*.test.js --timeout 60000",
+    "test:headed": "set HEADLESS=false && mocha tests/**/*.test.js --timeout 60000"
+  },
+  "keywords": [
+    "formalne-metode",
+    "seminarski",
+    "selenium-tests"
+  ],
+  "author": "Hasan",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "selenium-webdriver": "^4.15.0"
+  }
+}

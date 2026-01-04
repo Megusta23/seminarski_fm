@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Screenshots from failed tests
+screenshots/
+refs/
+
+# Test reports
+*.log
+test-results/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
