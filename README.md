@@ -49,7 +49,15 @@ U ovom seminarskom radu testirali smo **2 web aplikacije** koristeći 8 različi
 # Clone repository
 git clone https://github.com/Megusta23/seminarski_fm.git
 cd seminarski_fm
+cd selenium-tests-b2b-house
 
+# Install dependencies
+npm install
+
+# Install Selenium ChromeDriver
+npm install chromedriver --save-dev
+
+cd selenium-tests-wikipedia
 # Install dependencies
 npm install
 
@@ -61,55 +69,13 @@ npm install chromedriver --save-dev
 
 ```bash
 # Pokretanje Wikipedia testova
-npm run test:wikipedia
+cd selenium-tests-wikipedia
+npm test
 
 # Pokretanje Hithouse testova
-npm run test:hithouse
-
-# Pokretanje svih testova
+cd selenium-tests-b2b-house
 npm test
 ```
-
----
-
-## Rezultati testiranja
-
-### Wikipedia
-- **Total tests:** 12
-- **Passed:** 12
-- **Failed:** 0
-- **Coverage:** 100% funkcionalnosti
-
-### Hithouse
-- **Total tests:** 25
-- **Passed:** 10
-- **Failed:** 15
-- **Bugs identified:** 15 kritičnih defekata
-
----
-
-## Identificirani defekti (Hithouse)
-
-Tokom testiranja hithouse.ba identifikovano je **15 bugova**:
-
-1. **BUG-001** - Neresponzivna search bar i prijava/registracija sekcija
-2. **BUG-002** - Opcije filtriranja se ne prikazuju korektno
-3. **BUG-003** - Dugački string u search probija margine sajta
-4. **BUG-004** - Slike proizvoda fale
-5. **BUG-005** - Neadekvatan kontrast teksta
-6. **BUG-006** - Duplikacija mega menua
-7. **BUG-007** - Broken aktivna sekcija
-8. **BUG-008** - Footer nije zalijepljen na dno
-9. **BUG-009** - Nepotpun prikaz naručivanja
-10. **BUG-010** - Navbar slomi tablet prikaz
-11. **BUG-011** - Klik na tab probija sajt
-12. **BUG-012** - Gramatička greška u tekstu
-13. **BUG-013** - Karakter "d\\" uništava sajt (KRITIČAN)
-14. **BUG-014** - Whitespace validacija nedostaje
-15. **BUG-015** - Neresponzivna stranica na mobilnim uređajima
-
----
-
 ## Dokumentacija
 
 Kompletan izvještaj sa svim tehnikama testiranja, tabelama i dijagramima dostupan je u:
